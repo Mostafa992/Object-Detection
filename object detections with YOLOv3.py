@@ -10,10 +10,16 @@ width,height=320,320
 conf_threshold=0.5
 nms_threshold=0.3
 #########################################
+
+
+
+#get classes names
 with open(classes_path,"rt") as f:
     classes=f.read().rstrip("\n").split("\n")
 ##print("classes detected: \n",classes)
 ## print("Number of classes detected: ",len(classes))
+
+
 
 # Read Network
 net=cv2.dnn.readNetFromDarknet(configuration_path,weights_path)
@@ -21,13 +27,7 @@ net=cv2.dnn.readNetFromDarknet(configuration_path,weights_path)
 net.setPreferableBackend(cv2.dnn.DNN_BACKEND_OPENCV)
 net.setPreferableTarget(cv2.dnn.DNN_TARGET_CPU)
 
-
-#Intiate VideoFeed
-cap=cv2.VideoCapture(0)
-cap.set(3,640)
-cap.set(4,480)
-
-
+#fn for detecting objects
 def find_objects(output,img):
     H,W,C=img.shape
     bbox=[]
@@ -58,6 +58,11 @@ def find_objects(output,img):
         x,y,w,h=box[0],box[1],box[2],box[3]
         cv2.rectangle(img,(x,y),(x+w,y+h),(255,0,255),2)
         cv2.putText(img,f'{classes[class_Ids[i]]}{int(confidences[i]*100)}%',(x,y-10),cv2.FONT_HERSHEY_COMPLEX,2,(255,0,255),2)
+
+#Intiate VideoFeed
+cap=cv2.VideoCapture(0)
+cap.set(3,640)
+cap.set(4,480)
 while True:
     succ,frame=cap.read()
 
@@ -90,10 +95,6 @@ while True:
     #print(output_layers[0][0])
 
     find_objects(output_layers,frame)
-
-
-
-
 
     cv2.imshow("Frame",frame)
 
